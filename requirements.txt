@@ -1,0 +1,10 @@
+datasets
+openai
+httpx 
+tqdm 
+matplotlib 
+pandas 
+numpy
+transformers
+flash-attn
+accelerate>=0.26.0

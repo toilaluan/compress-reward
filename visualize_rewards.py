@@ -4,11 +4,23 @@ import numpy as np
 import pandas as pd
 
 # Load the reward results
-with open("reward_results.json", "r") as f:
+REWARD_MODEL = "skywork"
+assert REWARD_MODEL in ["skywork", "dt_skywork", "nemotron"]
+with open(f"outputs/{REWARD_MODEL}_reward_results.json", "r") as f:
     reward_data = json.load(f)
 
 # Initialize data structures to store parsed rewards
-reward_aspects = ["helpfulness", "correctness", "coherence", "complexity", "verbosity"]
+# Create figure
+fig = plt.figure(figsize=(15, 12))
+
+# Create subplots for error bar plots
+if REWARD_MODEL in ["nemotron", "dt_skywork"]:
+    reward_aspects = ["helpfulness", "correctness", "coherence", "complexity", "verbosity"]
+    fig, axs = plt.subplots(len(reward_aspects), 1, figsize=(10, 15))
+elif REWARD_MODEL == "skywork":
+    reward_aspects = ["score"]
+    axs = [fig.add_subplot(111)]
+
 prompt_types = set()
 parsed_rewards = {aspect: {} for aspect in reward_aspects}
 
@@ -30,11 +42,7 @@ mean_rewards = {
     for aspect, prompt_data in parsed_rewards.items()
 }
 
-# Create figure
-fig = plt.figure(figsize=(15, 12))
 
-# Create subplots for error bar plots
-fig, axs = plt.subplots(len(reward_aspects), 1, figsize=(10, 15))
 plt.subplots_adjust(hspace=0.4)
 
 # Calculate means and standard errors for each aspect and prompt type
@@ -68,7 +76,7 @@ for ax in axs:
 fig.suptitle("Reward Analysis by Aspect", fontsize=16, y=0.95)
 
 # Save the figure
-plt.savefig("reward_analysis_error_bars.png", bbox_inches="tight", dpi=300)
+plt.savefig(f"outputs/{REWARD_MODEL}_reward_analysis_error_bars.png", bbox_inches="tight", dpi=300)
 plt.close()
 
 # Print numerical summary
